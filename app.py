@@ -3,6 +3,7 @@ from flask_cors import CORS
 import os
 from dotenv import load_dotenv
 from groq import Groq
+print("✅ GROQ_API_KEY loaded:", os.getenv("GROQ_API_KEY"))
 
 load_dotenv()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
