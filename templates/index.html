@@ -1,1 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Ask Your C Professor</title>
+</head>
+<body>
+    <h1>Ask a Question About C Programming</h1>
+
+    <input type="text" id="question" placeholder="Type your question here..." style="width: 60%;">
+    <button onclick="askQuestion()">Ask</button>
+
+    <h2>Response:</h2>
+    <div id="response" style="white-space: pre-line; border: 1px solid #ccc; padding: 10px;"></div>
+
+    <script>
+        async function askQuestion() {
+            const question = document.getElementById('question').value;
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerText = "Thinking...";
+
+            try {
+                const res = await fetch('/api/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+
+                const data = await res.json();
+                if (data.reply) {
+                    responseDiv.innerText = data.reply;
+                } else if (data.error) {
+                    responseDiv.innerText = "Error: " + data.error;
+                } else {
+                    responseDiv.innerText = "Unknown error.";
+                }
+            } catch (error) {
+                responseDiv.innerText = "Network error: " + error.message;
+            }
+        }
+    </script>
+</body>
+</html>
 
