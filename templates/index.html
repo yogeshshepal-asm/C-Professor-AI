@@ -32,8 +32,8 @@
       margin: 0;
       padding: 0;
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
+      flex-direction: column;
+      align-items: center;
       min-height: 100vh;
       padding-top: 60px;
       transition: background 0.3s, color 0.3s;
@@ -72,10 +72,11 @@
       justify-content: space-between;
       gap: 10px;
       margin-bottom: 16px;
+      flex-wrap: wrap;
     }
 
     button {
-      flex: 1;
+      flex: 1 1 30%;
       padding: 12px;
       font-size: 16px;
       border: none;
@@ -157,6 +158,22 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    footer.footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 14px;
+      color: var(--accent);
+      margin-top: 40px;
+    }
+    footer.footer a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: bold;
+    }
+    footer.footer a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
@@ -179,6 +196,12 @@
       <button onclick="shareResponse()">🔗 Share</button>
     </div>
   </div>
+
+  <footer class="footer">
+    © 2025 <a href="https://www.asmnext.edu.in/" target="_blank" rel="noopener">
+      ASM NEXTGEN Technical Campus
+    </a> — Developed by Dr. Yogesh Shepal (Associate Professor)
+  </footer>
 
   <script>
     function toggleDarkMode() {
@@ -218,12 +241,13 @@
     }
 
     function startVoice() {
-      if (!('webkitSpeechRecognition' in window)) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
         alert('Voice recognition not supported in this browser.');
         return;
       }
 
-      const recognition = new webkitSpeechRecognition();
+      const recognition = new SpeechRecognition();
       recognition.lang = 'en-US';
       recognition.interimResults = false;
       recognition.maxAlternatives = 1;
@@ -262,6 +286,10 @@
       const url = `https://wa.me/?text=${shareText}`;
       window.open(url, '_blank');
     }
+
+    document.getElementById('question').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') askQuestion();
+    });
   </script>
 </body>
 </html>
