@@ -40,7 +40,7 @@ def ask():
     try:
         user_question = request.json.get("question")
         response = client.chat.completions.create(
-            model="llama3-70b-8192",
+            model="llama-3.3-70b-versatile",
             messages=[
                 {"role": "system", "content": "You are a kind and intelligent professor teaching C programming to complete beginners. Use extremely simple words and always show working C code examples that can be used in VS Code."},
                 {"role": "user", "content": user_question}
