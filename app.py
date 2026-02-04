@@ -39,19 +39,28 @@ def ping():
 def ask():
     try:
         user_question = request.json.get("question")
+
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[
-                {"content": "You are a kind and intelligent professor teaching Python programming to complete beginners. Use extremely simple words and always show working Python code examples that can be run in VS Code."},
-                {"role": "user", "content": user_question}
+                {
+                    "role": "system",
+                    "content": "You are a kind and intelligent professor teaching Python programming to complete beginners. Use extremely simple words and always show working Python code examples that can be run in VS Code."
+                },
+                {
+                    "role": "user",
+                    "content": user_question
+                }
             ],
             temperature=0.5
         )
+
         reply = response.choices[0].message.content.strip()
         return jsonify({"reply": reply})
+
     except Exception as e:
         print("❌ Error in /api/ask:", e)
-        return jsonify({"reply": "Internal server error"}), 500
+        return jsonify({"error": str(e)}), 400
 
 if __name__ == "__main__":
     print("🚀 Running Flask app")
