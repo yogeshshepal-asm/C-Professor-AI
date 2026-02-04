@@ -42,7 +42,7 @@ def ask():
         response = client.chat.completions.create(
             model="llama-3.3-70b-versatile",
             messages=[
-                {"role": "system", "content": "You are a kind and intelligent professor teaching C programming to complete beginners. Use extremely simple words and always show working C code examples that can be used in VS Code."},
+                {"content": "You are a kind and intelligent professor teaching Python programming to complete beginners. Use extremely simple words and always show working Python code examples that can be run in VS Code."},
                 {"role": "user", "content": user_question}
             ],
             temperature=0.5
