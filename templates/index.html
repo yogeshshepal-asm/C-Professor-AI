@@ -2,222 +2,293 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Ask Your Python Professor</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Python Tutor - ASM NEXTGEN</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  
   <style>
-    :root {
-      --bg-color: #f4f4f9;
-      --text-color: #333;
-      --card-color: #ffffff;
-      --border-color: #ccc;
-      --button-bg: #007bff;
-      --button-hover: #0056b3;
-      --accent: #6c757d;
-    }
-
-    body.dark {
-      --bg-color: #1e1e1e;
-      --text-color: #f5f5f5;
-      --card-color: #2c2c2c;
-      --border-color: #444;
-      --button-bg: #375a7f;
-      --button-hover: #284563;
-      --accent: #888;
-    }
-
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: var(--bg-color);
-      color: var(--text-color);
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding-top: 60px;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    .container {
-      background: var(--card-color);
-      padding: 30px 40px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-      width: 90%;
-      max-width: 700px;
-      transition: background 0.3s, color 0.3s;
-    }
-
-    h1 {
-      font-size: 26px;
-      text-align: center;
-      margin-bottom: 24px;
-    }
-
-    input[type="text"] {
-      width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      margin-bottom: 12px;
-      background: var(--card-color);
-      color: var(--text-color);
-      box-sizing: border-box;
-    }
-
-    .button-row {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 16px;
-      flex-wrap: wrap;
-    }
-
-    button {
-      flex: 1 1 30%;
-      padding: 12px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-
-    button.ask {
-      background-color: var(--button-bg);
-      color: white;
-    }
-
-    button.ask:hover {
-      background-color: var(--button-hover);
-    }
-
-    button.voice {
-      background-color: #28a745;
-      color: white;
-    }
-
-    button.voice:hover {
-      background-color: #1c7c35;
-    }
-
-    .toggle {
-      background-color: var(--accent);
-      color: white;
-      flex: none;
+    body { font-family: 'Inter', sans-serif; }
+    
+    /* Code editor styling */
+    .code-editor {
+      font-family: 'Fira Code', monospace;
       font-size: 14px;
+      line-height: 1.6;
+      tab-size: 4;
     }
-
-    .toggle:hover {
-      opacity: 0.85;
+    
+    /* Glassmorphism effect */
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
-
-    h2 {
-      font-size: 20px;
-      margin-top: 24px;
+    
+    .dark .glass {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
-
-    #response {
-      margin-top: 10px;
-      padding: 15px;
-      background-color: var(--bg-color);
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      white-space: pre-line;
-      font-family: monospace;
-      min-height: 60px;
+    
+    /* Gradient backgrounds */
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     }
-
-    .action-buttons {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 10px;
+    
+    .dark .gradient-bg {
+      background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
     }
-
-    .action-buttons button {
-      padding: 8px 12px;
-      font-size: 14px;
-      background-color: var(--accent);
-      color: white;
+    
+    /* Smooth transitions */
+    * { transition: all 0.3s ease; }
+    
+    /* Custom scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #f1f1f1; }
+    ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #555; }
+    
+    .dark ::-webkit-scrollbar-track { background: #1f2937; }
+    .dark ::-webkit-scrollbar-thumb { background: #4b5563; }
+    
+    /* Answer reveal animation */
+    .answer-text {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease;
     }
-
-    .spinner {
-      width: 24px;
-      height: 24px;
-      border: 4px solid #ccc;
-      border-top: 4px solid var(--button-bg);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin: 0 auto;
+    
+    .answer-text.show {
+      max-height: 1000px;
     }
-
+    
+    /* Spinner */
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      to { transform: rotate(360deg); }
     }
-
-    footer.footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 14px;
-      color: var(--accent);
-      margin-top: 40px;
-    }
-    footer.footer a {
-      color: var(--accent);
-      text-decoration: none;
-      font-weight: bold;
-    }
-    footer.footer a:hover {
-      text-decoration: underline;
+    
+    .spinner {
+      border: 3px solid rgba(0,0,0,0.1);
+      border-top-color: #667eea;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
     }
   </style>
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#667eea',
+            secondary: '#764ba2',
+          }
+        }
+      }
+    }
+  </script>
 </head>
-<body>
-  <div class="container">
-    <h1>Ask Your Python Professor</h1>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
 
-    <input type="text" id="question" placeholder="e.g., What is List in Python?">
-
-    <div class="button-row">
-      <button class="ask" onclick="askQuestion()">Ask</button>
-      <button class="voice" onclick="startVoice()">🎤 Speak</button>
-      <button class="toggle" onclick="toggleDarkMode()">🌙 Toggle</button>
+  <!-- Header -->
+  <header class="gradient-bg text-white shadow-lg">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <h1 class="text-2xl font-bold mx-auto">🎓 AI Python Tutor</h1>
+      <button onclick="toggleDarkMode()" class="p-2 rounded-lg hover:bg-white/20 absolute right-4">
+        <span id="themeIcon">🌙</span>
+      </button>
     </div>
+  </header>
 
-    <h2>Response:</h2>
-    <div id="response">Waiting for your question...</div>
+  <div class="flex flex-col lg:flex-row min-h-screen">
+    
+    <!-- Sidebar -->
+    <aside class="lg:w-64 bg-white dark:bg-gray-800 shadow-lg p-6">
+      <h2 class="text-lg font-bold mb-4 text-gray-700 dark:text-gray-200">📚 Quick Topics</h2>
+      
+      <div class="space-y-2">
+        <button onclick="loadTopic('loops')" class="w-full text-left px-4 py-3 rounded-lg bg-blue-500 hover:bg-blue-600 text-white font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+          🔁 Loops
+        </button>
+        <button onclick="loadTopic('functions')" class="w-full text-left px-4 py-3 rounded-lg bg-green-500 hover:bg-green-600 text-white font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+          ⚡ Functions
+        </button>
+        <button onclick="loadTopic('oop')" class="w-full text-left px-4 py-3 rounded-lg bg-purple-500 hover:bg-purple-600 text-white font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+          🎯 OOP
+        </button>
+        <button onclick="loadTopic('file-handling')" class="w-full text-left px-4 py-3 rounded-lg bg-yellow-500 hover:bg-yellow-600 text-white font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+          📁 File Handling
+        </button>
+        <button onclick="loadTopic('data-structures')" class="w-full text-left px-4 py-3 rounded-lg bg-red-500 hover:bg-red-600 text-white font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+          📊 Data Structures
+        </button>
+      </div>
+    </aside>
 
-    <div class="action-buttons">
-      <button onclick="copyResponse()">📋 Copy</button>
-      <button onclick="shareResponse()">🔗 Share</button>
-    </div>
+    <!-- Main Content -->
+    <main class="flex-1 p-6 lg:p-8">
+      <div class="max-w-5xl mx-auto space-y-6">
+        
+        <!-- Chat Section -->
+        <section class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 lg:p-8">
+          <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">💬 Ask Me Anything</h2>
+          
+          <!-- Input -->
+          <div class="mb-4">
+            <input 
+              type="text" 
+              id="question" 
+              placeholder="Type your Python question here..."
+              class="w-full px-4 py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:border-blue-500 focus:outline-none text-gray-900 dark:text-white"
+            >
+          </div>
+          
+          <!-- Buttons -->
+          <div class="flex flex-wrap gap-3 mb-6">
+            <button onclick="askQuestion()" class="flex-1 min-w-[120px] px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+              💬 Ask
+            </button>
+            <button onclick="startVoice()" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+              🎤 Speak
+            </button>
+            <button onclick="copyResponse()" class="px-6 py-3 bg-gray-500 hover:bg-gray-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+              📋 Copy
+            </button>
+            <button onclick="downloadNotes()" class="px-6 py-3 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+              📥 Download Notes
+            </button>
+          </div>
+          
+          <!-- Response -->
+          <div class="bg-gray-50 dark:bg-gray-900 rounded-lg p-6 min-h-[150px] max-h-[400px] overflow-y-auto border border-gray-200 dark:border-gray-700">
+            <p id="response" class="text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-mono text-sm">Click a topic or ask your question...</p>
+          </div>
+        </section>
+
+        <!-- Code Execution Sandbox -->
+        <section class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 lg:p-8">
+          <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">⚡ Python Code Sandbox</h2>
+          
+          <!-- Code Editor -->
+          <div class="mb-4">
+            <label class="block text-sm font-semibold mb-2 text-gray-700 dark:text-gray-300">Write your Python code:</label>
+            <textarea 
+              id="codeEditor" 
+              class="code-editor w-full h-64 px-4 py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 focus:border-green-500 focus:outline-none resize-none"
+              placeholder="# Write your Python code here&#x0A;print('Hello, World!')"
+            ></textarea>
+          </div>
+          
+          <!-- Run Button -->
+          <div class="flex gap-3 mb-4">
+            <button onclick="runCode()" class="flex-1 px-6 py-3 bg-gradient-to-r from-green-500 to-teal-600 hover:from-green-600 hover:to-teal-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+              ▶️ Run Code
+            </button>
+            <button onclick="clearCode()" class="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+              🗑️ Clear
+            </button>
+          </div>
+          
+          <!-- Output Display -->
+          <div class="bg-gray-900 dark:bg-black rounded-lg p-4 min-h-[120px] max-h-[300px] overflow-y-auto border-2 border-gray-700">
+            <div class="text-xs font-semibold text-gray-400 mb-2">OUTPUT:</div>
+            <pre id="codeOutput" class="text-green-400 font-mono text-sm whitespace-pre-wrap">Ready to execute code...</pre>
+          </div>
+          
+          <!-- Security Notice -->
+          <div class="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+            <p class="text-xs text-yellow-800 dark:text-yellow-200">
+              🔒 <strong>Security:</strong> File I/O, network access, and dangerous operations are blocked. Code timeout: 3 seconds.
+            </p>
+          </div>
+        </section>
+
+        <!-- Practice Questions Section -->
+        <section class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-6 lg:p-8">
+          <h2 class="text-2xl font-bold mb-6 text-gray-800 dark:text-white">📝 Practice Questions</h2>
+          
+          <!-- Topic Selection -->
+          <div class="flex flex-col md:flex-row gap-3 mb-6">
+            <select id="questionTopic" class="flex-1 px-4 py-3 rounded-lg border-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 focus:border-blue-500 focus:outline-none text-gray-900 dark:text-white">
+              <option value="">Select a topic...</option>
+              <option value="Loops">Loops (for, while)</option>
+              <option value="Functions">Functions</option>
+              <option value="Object-Oriented Programming">OOP (Classes & Objects)</option>
+              <option value="File Handling">File Handling</option>
+              <option value="Data Structures">Data Structures</option>
+              <option value="Strings">Strings</option>
+              <option value="Conditionals">Conditionals (if/else)</option>
+            </select>
+            <button onclick="generateQuestions()" class="px-8 py-3 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
+              ✨ Generate
+            </button>
+          </div>
+          
+          <!-- Questions Display -->
+          <div id="questionsDisplay" class="hidden">
+            <div id="questionsContent" class="space-y-4 mb-4"></div>
+            <div class="text-center">
+              <button onclick="toggleAllAnswers()" class="px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl">
+                👁️ Toggle All Answers
+              </button>
+            </div>
+          </div>
+        </section>
+
+      </div>
+      
+      <!-- Footer -->
+      <footer class="text-center mt-12 text-gray-600 dark:text-gray-400">
+        <p>© 2025 <a href="https://www.asmnext.edu.in/" target="_blank" class="text-blue-500 hover:text-blue-600 font-semibold">ASM NEXTGEN Technical Campus</a></p>
+        <p class="text-sm mt-1">Developed by Dr. Yogesh Shepal</p>
+      </footer>
+    </main>
+
   </div>
 
-  <footer class="footer">
-    © 2025 <a href="https://www.asmnext.edu.in/" target="_blank" rel="noopener">
-      ASM NEXTGEN Technical Campus
-    </a> — Developed by Dr. Yogesh Shepal (Associate Professor)
-  </footer>
-
   <script>
+    // Dark mode
     function toggleDarkMode() {
-      document.body.classList.toggle('dark');
+      document.documentElement.classList.toggle('dark');
+      const isDark = document.documentElement.classList.contains('dark');
+      document.getElementById('themeIcon').textContent = isDark ? '☀️' : '🌙';
+      localStorage.setItem('darkMode', isDark);
     }
 
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.documentElement.classList.add('dark');
+      document.getElementById('themeIcon').textContent = '☀️';
+    }
+
+    // Load topic
+    function loadTopic(topic) {
+      const prompts = {
+        'loops': 'Teach me Python loops (for and while) with simple examples that I can run in PyCharm',
+        'functions': 'Teach me Python functions with examples including parameters and return values for PyCharm',
+        'oop': 'Teach me Python Object-Oriented Programming (classes and objects) with simple examples for PyCharm',
+        'file-handling': 'Teach me Python file handling (reading and writing files) with examples for PyCharm',
+        'data-structures': 'Teach me Python data structures (lists, tuples, dictionaries, sets) with examples for PyCharm'
+      };
+      document.getElementById('question').value = prompts[topic];
+      askQuestion();
+    }
+
+    // Ask question
     async function askQuestion() {
       const question = document.getElementById('question').value.trim();
       const responseDiv = document.getElementById('response');
 
       if (!question) {
-        responseDiv.innerText = "❗ Please enter a question.";
+        responseDiv.textContent = '❗ Please enter a question or select a topic.';
         return;
       }
 
-      responseDiv.innerHTML = '<div class="spinner"></div>';
+      responseDiv.innerHTML = '<div class="spinner mx-auto"></div>';
 
       try {
         const res = await fetch('/api/ask', {
@@ -227,19 +298,159 @@
         });
 
         const data = await res.json();
-
-        if (data.reply) {
-          responseDiv.innerText = data.reply;
-        } else if (data.error) {
-          responseDiv.innerText = "⚠️ Error: " + data.error;
-        } else {
-          responseDiv.innerText = "⚠️ Unknown response.";
-        }
+        responseDiv.textContent = data.reply || data.error || '⚠️ Unknown response.';
       } catch (error) {
-        responseDiv.innerText = "❌ Network error: " + error.message;
+        responseDiv.textContent = '❌ Network error: ' + error.message;
       }
     }
 
+    // Run code in sandbox
+    async function runCode() {
+      const code = document.getElementById('codeEditor').value.trim();
+      const outputDiv = document.getElementById('codeOutput');
+
+      if (!code) {
+        outputDiv.textContent = '❗ Please write some code first.';
+        outputDiv.className = 'text-yellow-400 font-mono text-sm whitespace-pre-wrap';
+        return;
+      }
+
+      outputDiv.textContent = '⏳ Executing code...';
+      outputDiv.className = 'text-blue-400 font-mono text-sm whitespace-pre-wrap';
+
+      try {
+        const res = await fetch('/api/execute-code', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ code })
+        });
+
+        const data = await res.json();
+
+        if (data.error) {
+          outputDiv.textContent = data.error;
+          outputDiv.className = 'text-red-400 font-mono text-sm whitespace-pre-wrap';
+        } else {
+          outputDiv.textContent = data.output || 'No output';
+          outputDiv.className = 'text-green-400 font-mono text-sm whitespace-pre-wrap';
+        }
+      } catch (error) {
+        outputDiv.textContent = '❌ Network error: ' + error.message;
+        outputDiv.className = 'text-red-400 font-mono text-sm whitespace-pre-wrap';
+      }
+    }
+
+    // Clear code editor
+    function clearCode() {
+      document.getElementById('codeEditor').value = '';
+      document.getElementById('codeOutput').textContent = 'Ready to execute code...';
+      document.getElementById('codeOutput').className = 'text-green-400 font-mono text-sm whitespace-pre-wrap';
+    }
+
+    // Generate questions
+    async function generateQuestions() {
+      const topic = document.getElementById('questionTopic').value;
+      const displayDiv = document.getElementById('questionsDisplay');
+      const contentDiv = document.getElementById('questionsContent');
+
+      if (!topic) {
+        alert('❗ Please select a topic first.');
+        return;
+      }
+
+      contentDiv.innerHTML = '<div class="spinner mx-auto"></div>';
+      displayDiv.classList.remove('hidden');
+
+      try {
+        const res = await fetch('/api/generate-questions', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic })
+        });
+
+        const data = await res.json();
+        if (data.questions) {
+          parseAndDisplayQuestions(data.questions);
+        } else {
+          contentDiv.innerHTML = '<p class="text-red-500">⚠️ Error: ' + (data.error || 'Unknown error') + '</p>';
+        }
+      } catch (error) {
+        contentDiv.innerHTML = '<p class="text-red-500">❌ Network error: ' + error.message + '</p>';
+      }
+    }
+
+    // Parse questions
+    function parseAndDisplayQuestions(text) {
+      const contentDiv = document.getElementById('questionsContent');
+      const lines = text.split('\n');
+      let html = '';
+      let currentQ = '';
+      let currentA = '';
+      let qNum = 0;
+      let inAnswer = false;
+
+      lines.forEach(line => {
+        line = line.trim();
+        if (line.match(/^Q\d+:/)) {
+          if (currentQ) html += createQuestionHTML(qNum, currentQ, currentA);
+          qNum++;
+          currentQ = line.replace(/^Q\d+:\s*/, '');
+          currentA = '';
+          inAnswer = false;
+        } else if (line.match(/^A\d+:/)) {
+          currentA = line.replace(/^A\d+:\s*/, '');
+          inAnswer = true;
+        } else if (line) {
+          if (inAnswer) currentA += '\n' + line;
+          else if (currentQ) currentQ += ' ' + line;
+        }
+      });
+
+      if (currentQ) html += createQuestionHTML(qNum, currentQ, currentA);
+      contentDiv.innerHTML = html || '<p class="text-gray-500">No questions generated.</p>';
+    }
+
+    // Create question HTML
+    function createQuestionHTML(num, question, answer) {
+      return `
+        <div class="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-gray-700 dark:to-gray-800 rounded-xl p-6 shadow-md border border-gray-200 dark:border-gray-600">
+          <div class="font-semibold text-lg text-blue-600 dark:text-blue-400 mb-3">Q${num}: ${question}</div>
+          <button onclick="toggleAnswer(${num})" id="btn-${num}" class="px-4 py-2 bg-green-500 hover:bg-green-600 text-white font-medium rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5">
+            Show Answer
+          </button>
+          <div class="answer-text mt-4 p-4 bg-white dark:bg-gray-900 rounded-lg border-l-4 border-green-500" id="answer-${num}">
+            <strong class="text-green-600 dark:text-green-400">Answer:</strong>
+            <pre class="mt-2 text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap font-mono">${answer || 'No answer provided'}</pre>
+          </div>
+        </div>
+      `;
+    }
+
+    // Toggle answer
+    function toggleAnswer(num) {
+      const answerDiv = document.getElementById('answer-' + num);
+      const btn = document.getElementById('btn-' + num);
+      
+      if (answerDiv.classList.contains('show')) {
+        answerDiv.classList.remove('show');
+        btn.textContent = 'Show Answer';
+      } else {
+        answerDiv.classList.add('show');
+        btn.textContent = 'Hide Answer';
+      }
+    }
+
+    // Toggle all answers
+    function toggleAllAnswers() {
+      const answers = document.querySelectorAll('.answer-text');
+      const anyHidden = Array.from(answers).some(a => !a.classList.contains('show'));
+      
+      answers.forEach(answer => {
+        anyHidden ? answer.classList.add('show') : answer.classList.remove('show');
+      });
+    }
+
+    // Voice input
     function startVoice() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
@@ -250,7 +461,6 @@
       const recognition = new SpeechRecognition();
       recognition.lang = 'en-US';
       recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
 
       recognition.onstart = () => {
         document.getElementById('question').placeholder = '🎙️ Listening...';
@@ -261,35 +471,84 @@
       };
 
       recognition.onresult = (event) => {
-        const speechText = event.results[0][0].transcript;
-        document.getElementById('question').value = speechText;
-        askQuestion(); // auto-submit
+        document.getElementById('question').value = event.results[0][0].transcript;
+        askQuestion();
       };
 
       recognition.onend = () => {
-        document.getElementById('question').placeholder = 'e.g., What is a List in python?';
+        document.getElementById('question').placeholder = 'Type your Python question here...';
       };
 
       recognition.start();
     }
 
+    // Copy response
     function copyResponse() {
-      const text = document.getElementById('response').innerText;
+      const text = document.getElementById('response').textContent;
       navigator.clipboard.writeText(text).then(() => {
-        alert("📋 Copied to clipboard!");
+        alert('📋 Copied to clipboard!');
       });
     }
 
-    function shareResponse() {
-      const text = document.getElementById('response').innerText;
-      const shareText = encodeURIComponent(text);
-      const url = `https://wa.me/?text=${shareText}`;
-      window.open(url, '_blank');
+    // Download notes
+    async function downloadNotes() {
+      const content = document.getElementById('response').textContent;
+      const question = document.getElementById('question').value.trim();
+      
+      if (!content || content === 'Click a topic or ask your question...') {
+        alert('❗ No content to download. Ask a question first!');
+        return;
+      }
+      
+      // Extract topic from question or use default
+      let topic = 'Python Notes';
+      if (question) {
+        const words = question.split(' ').slice(0, 3).join(' ');
+        topic = words || 'Python Notes';
+      }
+      
+      try {
+        const res = await fetch('/api/download-notes', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content, topic })
+        });
+        
+        if (res.ok) {
+          const blob = await res.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = res.headers.get('Content-Disposition')?.split('filename=')[1] || 'notes.txt';
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+          alert('📥 Notes downloaded successfully!');
+        } else {
+          alert('⚠️ Error downloading notes.');
+        }
+      } catch (error) {
+        alert('❌ Network error: ' + error.message);
+      }
     }
 
+    // Enter key
     document.getElementById('question').addEventListener('keydown', (e) => {
       if (e.key === 'Enter') askQuestion();
     });
+
+    // Tab key in code editor
+    document.getElementById('codeEditor').addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        const start = e.target.selectionStart;
+        const end = e.target.selectionEnd;
+        e.target.value = e.target.value.substring(0, start) + '    ' + e.target.value.substring(end);
+        e.target.selectionStart = e.target.selectionEnd = start + 4;
+      }
+    });
   </script>
+
 </body>
 </html>
